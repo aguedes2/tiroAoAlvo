@@ -1,0 +1,90 @@
+<div class="container">
+  <h1>Acerte o Alvo</h1>
+  <canvas></canvas>
+  <h3 data-placar></h3>
+</div>
+
+<script>
+  const tela = document.querySelector('canvas')
+  const container = document.querySelector('.container')
+  const pincel = tela.getContext('2d')
+  const placar = document.querySelector('[data-placar]')
+
+  const width = 600
+  const height = 400
+  const FPS = 60
+  const velAlvo = 1200
+
+  container.style.width = width
+  container.style.display = 'flex'
+  container.style.flexDirection = 'column'
+  container.style.alignItems = 'center'
+  container.style.justifyContent = 'center'
+
+  tela.setAttribute('width', width)
+  tela.setAttribute('height', height)
+
+  var acertos = 0
+  var xAlvo = Math.round(Math.random() * width)
+  var yAlvo = Math.round(Math.random() * height)
+
+  //tela
+  function desenhaTela() {
+    pincel.fillStyle = 'lightgrey'
+    pincel.fillRect(0, 0, width, height)
+    pincel.strokeRect(0, 0, width, height)
+  }
+
+  function limpaTela() {
+    pincel.clearRect(0, 0, width, height)
+  }
+
+  function desenhaCirculo(x, y, raio, cor) {
+    pincel.fillStyle = cor
+    pincel.beginPath()
+    pincel.arc(x, y, raio, 0, 2 * Math.PI)
+    pincel.fill()
+  }
+
+  function desenhaAlvo(x, y) {
+    desenhaCirculo(x, y, 30, 'red')
+    desenhaCirculo(x, y, 20, 'white')
+    desenhaCirculo(x, y, 10, 'red')
+  }
+
+  function mudaAlvo() {
+    xAlvo = Math.floor(Math.random() * width)
+    yAlvo = Math.floor(Math.random() * height)
+  }
+
+  function atirar(evento) {
+    let xTiro = evento.pageX - tela.offsetLeft
+    let yTiro = evento.pageY - tela.offsetTop
+
+    if (
+      xTiro >= xAlvo - 10 &&
+      xTiro <= xAlvo + 10 &&
+      yTiro >= yAlvo - 10 &&
+      yTiro <= yAlvo + 10
+    ) {
+      acertos++
+    }
+  }
+
+  function atualizaPlacar() {
+    placar.textContent = `Placar: ${acertos}`
+  }
+
+  function atualizaTela() {
+    limpaTela()
+    desenhaTela()
+
+    desenhaAlvo(xAlvo, yAlvo)
+    atualizaPlacar()
+  }
+
+  setInterval(atualizaTela, FPS / 1000)
+  setInterval(mudaAlvo, velAlvo)
+
+  tela.onclick = atirar
+</script>
